@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
+
+:root {
+    --primary-accent: #00f2ff;
+    --bg-color: #050505;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.07);
+    --text-main: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.5);
+    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.clear { --primary-accent: #ffaa00; --bg-gradient: radial-gradient(circle at top right, #201b00, #050505); }
+body.clouds { --primary-accent: #00d4ff; --bg-gradient: radial-gradient(circle at top right, #001a20, #050505); }
+body.rain { --primary-accent: #0066ff; --bg-gradient: radial-gradient(circle at top right, #000820, #050505); }
+body.snow { --primary-accent: #ffffff; --bg-gradient: radial-gradient(circle at top right, #1a1a1a, #050505); }
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+body {
+    background: var(--bg-color);
+    background-image: var(--bg-gradient);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+body::before {
+    content: ''; position: absolute; width: 400px; height: 400px; background: var(--primary-accent);
+    filter: blur(150px); opacity: 0.15; z-index: 0; top: 10%; right: 10%; animation: pulse 10s infinite alternate;
+}
+
+@keyframes pulse { from { opacity: 0.1; transform: scale(1); } to { opacity: 0.2; transform: scale(1.2); } }
+
+.app-container {
+    position: relative; z-index: 1; display: grid; grid-template-columns: 350px 450px;
+    grid-template-rows: auto auto; gap: 20px; width: 90%; max-width: 900px;
+}
+
+.glass-panel {
+    background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border); border-radius: 40px; padding: 30px; transition: var(--transition);
+}
+
+.glass-panel:hover { border-color: rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.05); }
+
+.time-section { grid-column: 1 / 2; grid-row: 1 / 2; display: flex; flex-direction: column; justify-content: center; }
+
+#time { font-family: 'Outfit', sans-serif; font-size: 5rem; font-weight: 800; line-height: 0.9; letter-spacing: -3px; margin-bottom: 10px; }
+
+.greeting-text { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; }
+
+.weather-mini { margin-top: 20px; display: flex; align-items: center; gap: 15px; }
+
+.temp-big { font-size: 2.5rem; font-family: 'Outfit', sans-serif; font-weight: 500; }
+
+.goals-section { grid-column: 2 / 3; grid-row: 1 / 3; display: flex; flex-direction: column; }
+
+.goals-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+
+.goals-header h2 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; }
+
+.goals-list { flex-grow: 1; overflow-y: auto; padding-right: 10px; }
+
+.goals-list::-webkit-scrollbar { width: 4px; }
+
+.goals-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+
+.goal-card {
+    background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: 20px;
+    padding: 15px 20px; margin-bottom: 12px; display: flex; align-items: center;
+    justify-content: space-between; transition: var(--transition); cursor: pointer; min-height: 56px;
+}
+
+.goal-card:hover { transform: translateX(5px); background: rgba(255, 255, 255, 0.05); }
+
+.goal-content { display: flex; align-items: center; gap: 15px; flex: 1; }
+
+.goal-text-span { transition: var(--transition); line-height: 1.2; }
+
+.goal-card input[type="checkbox"] {
+    appearance: none; width: 22px; height: 22px; border: 2px solid var(--text-muted);
+    border-radius: 50%; transition: var(--transition); position: relative; cursor: pointer; flex-shrink: 0;
+}
+
+.goal-card input:checked { border-color: var(--primary-accent); background: var(--primary-accent); }
+
+.goal-card input:checked::after {
+    content: '✓'; position: absolute; color: #000; font-size: 14px; font-weight: 800; left: 4px; top: -1px;
+}
+
+.delete-btn {
+    background: none; border: none; color: var(--text-muted); font-size: 1.8rem;
+    cursor: pointer; opacity: 0; transition: var(--transition); width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    margin-left: 10px; padding: 0;
+    line-height: 0;
+    margin-bottom: 4px; /* Костыль для выравнивания конкретно этого символа крестика */
+}
+
+.goal-card:hover .delete-btn { opacity: 1; }
+
+.delete-btn:hover { color: #ff4d4d; transform: scale(1.1); }
+
+.birthday-section { grid-column: 1 / 2; grid-row: 2 / 3; display: flex; align-items: center; gap: 20px; }
+
+.progress-ring { position: relative; width: 70px; height: 70px; }
+
+.progress-ring svg { transform: rotate(-90deg); }
+
+.progress-ring circle { fill: none; stroke-width: 6; stroke-linecap: round; }
+
+.circle-bg { stroke: var(--glass-border); }
+
+.circle-val { stroke: var(--primary-accent); stroke-dasharray: 200; stroke-dashoffset: 50; }
+
+.input-group { margin-top: 20px; display: flex; background: rgba(255, 255, 255, 0.05); padding: 5px; border-radius: 15px; border: 1px solid var(--glass-border); }
+
+.input-group input { background: none; border: none; padding: 10px 15px; color: white; flex-grow: 1; outline: none; }
+
+.add-btn { background: var(--text-main); color: #000; border: none; border-radius: 12px; padding: 0 15px; font-weight: 700; cursor: pointer; transition: var(--transition); }
+
+.add-btn:hover { transform: scale(0.95); }
+
+@media (max-width: 850px) { .app-container { grid-template-columns: 1fr; overflow-y: auto; height: 95vh; padding: 20px 0; } }

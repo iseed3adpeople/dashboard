@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atmospheric Dash</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="{{ weather_type.lower() }}">
+    <div class="app-container">
+        <header class="glass-panel time-section">
+            <span class="greeting-text">{{ greeting }}</span>
+            <div id="time">00:00</div>
+            <div id="date" style="color: var(--primary-accent); font-weight: 500;"></div>
+            <div class="weather-mini">
+                <span class="temp-big">{{ temperature|round }}°</span>
+                <div>
+                    <div style="font-weight: 600;">{{ weather_type }}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">{{ description }}</div>
+                </div>
+            </div>
+        </header>
+        <section class="glass-panel goals-section">
+            <div class="goals-header">
+                <h2>Daily Focus</h2>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">{{ goals|length }} tasks</span>
+            </div>
+            <div class="goals-list">
+                {% for goal in goals %}
+                <div class="goal-card" id="goal-container-{{ goal.id }}" onclick="toggleGoal('{{ goal.id }}', this)">
+                    <div class="goal-content">
+                        <input type="checkbox" id="goal-{{ goal.id }}" {% if goal.completed %}checked{% endif %} onclick="event.stopPropagation()">
+                        <span class="goal-text-span" style="{% if goal.completed %}text-decoration: line-through; opacity: 0.4;{% endif %}">
+                            {{ goal.text }}
+                        </span>
+                    </div>
+                    <button class="delete-btn" onclick="deleteGoal('{{ goal.id }}', event)">&times;</button>
+                </div>
+                {% endfor %}
+            </div>
+            <form action="/add_goal" method="POST" class="input-group">
+                <input type="text" name="goal_text" placeholder="I want to..." required autocomplete="off">
+                <button type="submit" class="add-btn">Add</button>
+            </form>
+        </section>
+        <footer class="glass-panel birthday-section">
+            <div class="progress-ring">
+                <svg width="70" height="70">
+                    <circle class="circle-bg" cx="35" cy="35" r="32"></circle>
+                    <circle class="circle-val" cx="35" cy="35" r="32" id="bd-progress"></circle>
+                </svg>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.9rem;">{{ days }}</div>
+            </div>
+            <div>
+                <div style="font-weight: 600;">Days left</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Until your next birthday</div>
+            </div>
+        </footer>
+    </div>
+    <script>
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('time').innerHTML = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('date').innerHTML = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    function toggleGoal(id, element) {
+        const checkbox = document.getElementById('goal-' + id);
+        checkbox.checked = !checkbox.checked;
+        const label = checkbox.nextElementSibling;
+        fetch(`/toggle_goal/${id}`, { method: 'POST' }).then(res => {
+            if (res.ok) {
+                label.style.textDecoration = checkbox.checked ? 'line-through' : 'none';
+                label.style.opacity = checkbox.checked ? '0.4' : '1';
+            }
+        });
+    }
+
+    function deleteGoal(id, event) {
+        event.stopPropagation();
+        if (!confirm('Delete this goal?')) return;
+        fetch(`/delete_goal/${id}`, { method: 'POST' }).then(res => {
+            if (res.ok) {
+                const element = document.getElementById(`goal-container-${id}`);
+                element.style.opacity = '0';
+                element.style.transform = 'translateX(20px)';
+                setTimeout(() => element.remove(), 300);
+            }
+        });
+    }
+    const daysLeft = parseInt("{{ days }}");
+    const progress = Math.max(0, Math.min(200, (daysLeft / 365) * 200));
+    document.getElementById('bd-progress').style.strokeDashoffset = progress;
+    </script>
+</body>
+</html>
