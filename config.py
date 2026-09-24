@@ -1,4 +1,10 @@
+import os
 from datetime import datetime
-bd = datetime(2026,3,14)
-API_KEY = ('b1031d509071be9fa546659ff64669d3')
-CITY = 'Moscow'
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+BIRTHDAY = datetime.fromisoformat(os.environ["BIRTHDAY"])
+API_KEY = os.environ["OPENWEATHER_API_KEY"]
+CITY = os.getenv("CITY", "Moscow")
